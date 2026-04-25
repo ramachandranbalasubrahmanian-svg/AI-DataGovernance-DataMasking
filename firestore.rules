@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Global Helpers ---
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // --- Entity Validations ---
+    function isValidVaultedRecord(data) {
+      return data.keys().hasAll(['id', 'maskedData', 'processedBy', 'processedAt', 'contentSignature'])
+        && data.id is string
+        && data.maskedData is map
+        && data.processedBy is string
+        && data.processedAt == request.time
+        && data.contentSignature is string
+        && data.contentSignature.size() < 1024;
+    }
+
+    function isValidAuditLog(data) {
+      return data.keys().hasAll(['batchId', 'timestamp', 'recordCount', 'user'])
+        && data.batchId is string
+        && data.timestamp == request.time
+        && data.recordCount is int
+        && data.user == request.auth.token.email;
+    }
+
+    // --- Collections ---
+    match /vaulted_records/{recordId} {
+      // Rule 8: Secure List Queries (Enforced by isSignedIn + resource check if needed)
+      // For this app, records are shared among verified operators.
+      allow read: if isSignedIn();
+      
+      allow create: if isSignedIn() 
+        && isValidId(recordId) 
+        && isValidVaultedRecord(incoming());
+
+      allow delete: if isSignedIn();
+    }
+
+    match /audit_logs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() 
+        && isValidId(logId) 
+        && isValidAuditLog(incoming());
+      
+      allow delete: if isSignedIn();
+    }
+  }
+}

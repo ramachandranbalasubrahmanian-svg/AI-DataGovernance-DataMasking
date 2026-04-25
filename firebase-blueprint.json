@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "VaultedRecord": {
+      "title": "Vaulted Record",
+      "description": "Processed and masked sensitive data records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "maskedData": { "type": "object" },
+        "tokens": { "type": "object" },
+        "hashes": { "type": "object" },
+        "algorithm": { "type": "string" },
+        "userSalt": { "type": "string" },
+        "contentSignature": { "type": "string" },
+        "processedBy": { "type": "string" },
+        "processedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "maskedData", "processedBy", "processedAt"]
+    },
+    "AuditLog": {
+      "title": "Audit Log",
+      "description": "Log of batch processing actions",
+      "type": "object",
+      "properties": {
+        "batchId": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "recordCount": { "type": "integer" },
+        "algorithm": { "type": "string" },
+        "user": { "type": "string" }
+      },
+      "required": ["batchId", "timestamp", "recordCount", "user"]
+    }
+  },
+  "firestore": {
+    "/vaulted_records/{recordId}": {
+      "schema": "VaultedRecord",
+      "description": "Main store for masked records"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Security audit trail"
+    }
+  }
+}
