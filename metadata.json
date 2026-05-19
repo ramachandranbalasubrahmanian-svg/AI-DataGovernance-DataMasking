@@ -1,6 +1,11 @@
 {
-  "name": "Secure Batch Ingestion Gateway",
+  "name": "Remix: Secure Batch Ingestion Gateway",
   "description": "A zero-trust batch data processing system with automated PII segmentation, cryptographic masking, and human-in-the-loop validation.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["PII Masking", "Zero-Trust Pipeline", "Batch Ingestion"]
+  "majorCapabilities": [
+    "PII Masking",
+    "Zero-Trust Pipeline",
+    "Batch Ingestion",
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

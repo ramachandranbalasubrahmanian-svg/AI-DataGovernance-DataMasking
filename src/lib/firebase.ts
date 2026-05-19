@@ -10,10 +10,17 @@ export const auth = getAuth(app);
 // Connectivity check
 async function testConnection() {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
+    const testDoc = doc(db, 'test', 'connection');
+    await getDocFromServer(testDoc);
+    console.log("Firebase connection established successfully.");
   } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration or network.");
+    if (error instanceof Error) {
+      console.warn("Firestore connectivity test message:", error.message);
+      if (error.message.includes('the client is offline')) {
+        console.error("Firebase appears to be offline. This may be due to a new project still provisioning or network restrictions.");
+      }
+    } else {
+      console.error("Unknown Firebase initialization error:", error);
     }
   }
 }
