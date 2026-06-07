@@ -1,4 +1,4 @@
-# Secure Batch Ingestion Gateway
+# Secure Batch Ingestion Gateway 
 
 A production-grade, zero-trust batch data processing system designed for secure ingestion, PII classification, and cryptographic masking of sensitive data streams.
 
